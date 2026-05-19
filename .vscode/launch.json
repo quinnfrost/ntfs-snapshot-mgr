@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch (Debug)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/NtfsSnapshotMgr/bin/Debug/net8.0-windows/NtfsSnapshotMgr.dll",
+            "cwd": "${workspaceFolder}/NtfsSnapshotMgr",
+            "console": "externalTerminal",
+            "requireExactSource": false,
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "Run (no debug, recommended)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/NtfsSnapshotMgr/bin/Debug/net8.0-windows/NtfsSnapshotMgr.dll",
+            "cwd": "${workspaceFolder}/NtfsSnapshotMgr",
+            "console": "externalTerminal",
+            "requireExactSource": false,
+            "justMyCode": false,
+            "enableStepFiltering": false,
+            "stopOnEntry": false,
+            "symbolOptions": {
+                "searchPaths": [],
+                "searchMicrosoftSymbolServer": false,
+                "searchNuGetOrgSymbolServer": false
+            },
+            "suppressJITOptimizations": false
+        }
+    ]
+}
