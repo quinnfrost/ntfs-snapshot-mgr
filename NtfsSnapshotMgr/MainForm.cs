@@ -42,6 +42,9 @@ public partial class MainForm : Form
     private DateTime   _lastDeviceRefresh     = DateTime.MinValue;
     private DateTime   _lastLostFocus         = DateTime.MinValue;
 
+    // ── Right-click cell tracking ──────────────────────────────
+    private int _rightClickedColumn = -1;
+
     // ── Input safety ────────────────────────────────────────────
     private const double MAX_USER_INPUT = 1_000_000;  // max value in the selected unit
 
@@ -111,7 +114,10 @@ public partial class MainForm : Form
         // Context menu
         var mnuOpen = new ToolStripMenuItem("在资源管理器中打开");
         mnuOpen.Click += (_, _) => OpenSelectedSnapshot();
+        var mnuCopy = new ToolStripMenuItem("复制");
+        mnuCopy.Click += (_, _) => CopyClickedCell();
         _ctxSnapshot.Items.Add(mnuOpen);
+        _ctxSnapshot.Items.Add(mnuCopy);
 
         // ── Right panel: storage settings ─────────────────────
         var rightPanel = new Panel { Dock = DockStyle.Right, Width = 250, Padding = new Padding(8) };
@@ -217,7 +223,7 @@ public partial class MainForm : Form
         _txtMaxValue.Leave       += TxtMaxValue_Leave;
         _cmbUnit.SelectedIndexChanged += CmbUnit_SelectedIndexChanged;
 
-        _gridSnapshots.CellMouseClick  += Grid_CellMouseClick;
+        _gridSnapshots.MouseDown       += Grid_MouseDown;
         _gridSnapshots.CellDoubleClick += (_, _) => OpenSelectedSnapshot();
         _gridSnapshots.KeyDown         += Grid_KeyDown;
     }
@@ -395,12 +401,30 @@ public partial class MainForm : Form
     //  Snapshot explorer open
     // ═══════════════════════════════════════════════════════════
 
-    private void Grid_CellMouseClick(object? sender, DataGridViewCellMouseEventArgs e)
+    private void Grid_MouseDown(object? sender, MouseEventArgs e)
     {
-        if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
+        if (e.Button != MouseButtons.Right) return;
+
+        var hit = _gridSnapshots.HitTest(e.X, e.Y);
+        if (hit.RowIndex < 0) return;
+
+        _gridSnapshots.ClearSelection();
+        _gridSnapshots.Rows[hit.RowIndex].Selected = true;
+        _rightClickedColumn = hit.ColumnIndex;
+    }
+
+    private void CopyClickedCell()
+    {
+        if (_rightClickedColumn < 0 || _gridSnapshots.SelectedRows.Count == 0) return;
+
+        var row = _gridSnapshots.SelectedRows[0];
+        if (_rightClickedColumn >= row.Cells.Count) return;
+
+        var text = row.Cells[_rightClickedColumn].Value?.ToString();
+        if (!string.IsNullOrEmpty(text))
         {
-            _gridSnapshots.ClearSelection();
-            _gridSnapshots.Rows[e.RowIndex].Selected = true;
+            Clipboard.SetText(text);
+            _statusLabel.Text = $"已复制: {text}";
         }
     }
 
