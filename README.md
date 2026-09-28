@@ -1,3 +1,4 @@
+>**所有代码由copilot+deepseek-v4-flash完成，并且程序需要管理员权限，使用时注意**
 # NTFS Snapshot Manager
 
 Windows 桌面工具，用于管理本地 NTFS 卷影复制（Volume Shadow Copy / VSS）。
